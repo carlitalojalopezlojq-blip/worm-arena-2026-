@@ -155,7 +155,7 @@ class WormEntity(
     }
 }
 
-class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
+class GameView(context: Context, private val playerName: String) : SurfaceView(context), SurfaceHolder.Callback, Runnable {
 
     private var thread: Thread? = null
     @Volatile private var running = false
@@ -202,7 +202,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
             Color.rgb(255, 159, 64)
         )
 
-        player = WormEntity("Tú", false, 0f, 0f, Color.rgb(46, 213, 115), 25f)
+        player = WormEntity(playerName, false, 0f, 0f, Color.rgb(46, 213, 115), 25f)
         worms.add(player)
 
         for (i in 1..12) {
@@ -360,6 +360,34 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
         }
     }
 
+    private fun drawEyes(canvas: Canvas, w: WormEntity, headRadius: Float) {
+        val h = w.head()
+        val forwardX = cos(w.angle)
+        val forwardY = sin(w.angle)
+        val rightX = -forwardY
+        val rightY = forwardX
+
+        val eyeForwardOffset = headRadius * 0.35f
+        val eyeSideOffset = headRadius * 0.45f
+        val eyeRadius = (headRadius * 0.28f).coerceAtLeast(3.5f)
+        val pupilRadius = (eyeRadius * 0.55f).coerceAtLeast(2f)
+
+        val sides = floatArrayOf(-1f, 1f)
+        for (side in sides) {
+            val ex = h.x + forwardX * eyeForwardOffset + rightX * (eyeSideOffset * side)
+            val ey = h.y + forwardY * eyeForwardOffset + rightY * (eyeSideOffset * side)
+
+            paint.style = Paint.Style.FILL
+            paint.color = Color.WHITE
+            canvas.drawCircle(ex, ey, eyeRadius, paint)
+
+            val px = ex + forwardX * (eyeRadius * 0.25f)
+            val py = ey + forwardY * (eyeRadius * 0.25f)
+            paint.color = Color.rgb(18, 22, 32)
+            canvas.drawCircle(px, py, pupilRadius, paint)
+        }
+    }
+
     private fun drawFrame() {
         val canvas: Canvas = holder.lockCanvas() ?: return
         try {
@@ -409,10 +437,12 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
                     canvas.drawCircle(seg.x, seg.y, segRadius, paint)
                 }
 
+                drawEyes(canvas, w, r * 1.1f)
+
                 paint.color = Color.WHITE
                 paint.textSize = 26f
                 paint.textAlign = Paint.Align.CENTER
-                canvas.drawText(w.name, w.head().x, w.head().y - r - 14f, paint)
+                canvas.drawText(w.name, w.head().x, w.head().y - r * 1.1f - 14f, paint)
             }
 
             canvas.restore()
@@ -423,7 +453,7 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback,
             paint.color = Color.WHITE
             paint.textSize = 36f
             paint.textAlign = Paint.Align.LEFT
-            canvas.drawText("Masa: ${player.mass.toInt()}", 36f, 70f, paint)
+            canvas.drawText("${player.name} | Masa: ${player.mass.toInt()}", 36f, 70f, paint)
 
             if (gameOver) {
                 paint.color = Color.argb(180, 0, 0, 0)

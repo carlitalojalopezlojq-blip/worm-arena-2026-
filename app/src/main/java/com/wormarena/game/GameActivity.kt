@@ -8,7 +8,8 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        gameView = GameView(this)
+        val playerName = intent.getStringExtra(EXTRA_PLAYER_NAME)?.takeIf { it.isNotBlank() } ?: "Jugador"
+        gameView = GameView(this, playerName)
         setContentView(gameView)
     }
 
@@ -20,5 +21,9 @@ class GameActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         gameView.pause()
+    }
+
+    companion object {
+        const val EXTRA_PLAYER_NAME = "extra_player_name"
     }
 }
