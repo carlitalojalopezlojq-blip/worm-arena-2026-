@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,16 +21,24 @@ class MainActivity : AppCompatActivity() {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(64, 48, 64, 48)
+            setPadding(64, 32, 64, 32)
             setBackgroundColor(0xFF101522.toInt())
+        }
+
+        val logoView = ImageView(this).apply {
+            setImageResource(R.drawable.worm_logo)
+            adjustViewBounds = true
+            maxHeight = 260
+            maxWidth = 260
+            setPadding(0, 0, 0, 24)
         }
 
         val title = TextView(this).apply {
             text = "WORM ARENA – 2026\nAlpha 0.1 (Offline)"
-            textSize = 26f
+            textSize = 24f
             gravity = Gravity.CENTER
             setTextColor(0xFFFFFFFF.toInt())
-            setPadding(0, 0, 0, 32)
+            setPadding(0, 0, 0, 24)
         }
 
         val nameLabel = TextView(this).apply {
@@ -37,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             textSize = 16f
             gravity = Gravity.CENTER
             setTextColor(0xFFB8C4D9.toInt())
-            setPadding(0, 0, 0, 16)
+            setPadding(0, 0, 0, 12)
         }
 
         val nameInput = EditText(this).apply {
@@ -64,6 +73,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        layout.addView(logoView)
         layout.addView(title)
         layout.addView(nameLabel)
         layout.addView(nameInput)
